@@ -11,7 +11,7 @@ try {
     $db = getDBConnection();
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
+        global $errors;
         $errors = [];
         if (!Validator::validateString($_POST['body'], 5, 1000)) {
             $errors['body'] = "This field is required with a minimum of 5 characters and a maximum of 1000 characters";

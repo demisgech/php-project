@@ -2,40 +2,67 @@
 
 declare(strict_types=1);
 
+require_once "Middleware/Middleware.php";
+
 class Router
 {
-    public function route(string $path, string $method = "GET")
+    protected array $routes = [];
+
+    private function add(string $path, string $controller, string $method)
     {
-        if ($method === $_SERVER['REQUEST_METHOD'])
-            if (file_exists($path))
-                require_once $path;
-            else
-                abort();
+        $this->routes[] = [
+            'path' => $path,
+            'controller' => $controller,
+            'method' => $method,
+            'middleware' => null
+        ];
+        return $this;
     }
 
-    public function get(string $url)
+    public function get(string $path, string $controller)
     {
+        return $this->add($path, $controller, "GET");
+    }
+
+    public function post(string $path, string $controller)
+    {
+        return $this->add($path, $controller, "POST");
+    }
+
+    public function put(string $path, string $controller)
+    {
+        return $this->add($path, $controller, "PUT");
+    }
+
+    public function patch(string $path, string $controller)
+    {
+        return $this->add($path, $controller, "PATCH");
 
     }
 
-    public function post(string $url, array $data)
+    public function delete(string $path, string $controller)
     {
-
+        return $this->add($path, $controller, method: "DELETE");
     }
 
-    public function put(string $url, array $data)
+    public function only(string $key)
     {
-
+        $this->routes[array_key_last($this->routes)]['middleware'] = $key;
+        return $this;
     }
 
-    public function patch(string $url, array $data)
+    public function resolve(string $path, string $method)
     {
-
-    }
-
-    public function delete(string $url)
-    {
-
+        $path = parse_url($path, PHP_URL_PATH);
+        $method = strtoupper($method);
+        foreach ($this->routes as $route) {
+            if ($route['path'] === $path && $route['method'] === $method) {
+                if ($route['middleware'])
+                    Middleware::resolve($route['middleware']);
+                return require_once getBasePath($route['controller']);
+            }
+        }
+        $this->abort();
     }
 
     protected function abort(int $statusCode = 404)

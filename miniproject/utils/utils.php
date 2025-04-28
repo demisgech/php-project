@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-function abort(int $statusCode = 404)
+require_once "Http/HTTPStatusCode.php";
+require_once "Http/Session.php";
+function abort(int $statusCode = 404): never
 {
     http_response_code($statusCode);
 
@@ -34,3 +36,21 @@ function sanitize(string $data): string
     $result = strip_tags($result);
     return stripslashes($result);
 }
+
+function redirect(string $path): never
+{
+    header("Location: $path");
+    exit();
+}
+
+function showError(string $name): void
+{
+    if (array_key_exists('_flashed', $_SESSION)) :
+        if (isset(Session::get('errors')["$name"])): ?>
+            <div class="mb-3">
+                <p class="text-danger"><?= Session::get('errors')["$name"] ?></p>
+            </div>
+        <?php endif;
+    endif;
+}
+

@@ -3,4 +3,4 @@
 declare(strict_types=1);
 
 
-view("index.view.php");
+view("register/create.view.php");

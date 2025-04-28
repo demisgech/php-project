@@ -12,7 +12,7 @@ view("header.php");
             <ul class="list-group">
                 <?php foreach ($notes as $note) : ?>
                     <li class="list-group-item">
-                        <a class="linke" href="/note?id=<?= $note['id'] ?>">
+                        <a class="link" href="/note?id=<?= $note['id'] ?>">
                             <?= htmlspecialchars($note['body'], HTML_ENTITIES) ?>
                         </a>
                     </li>

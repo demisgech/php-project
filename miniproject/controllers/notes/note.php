@@ -18,11 +18,8 @@ try {
             SELECT * FROM notes
             WHERE id = :id;
         SQL;
-        $note = $db->query($sql, ['id' => $_GET['id']])->find();
 
-        if (!$note) {
-            abort();
-        }
+        $note = $db->query($sql, ['id' => $_GET['id']])->findOrFail();
 
         authorize($note['user_id'] === $currentAuthorizedUserId);
 

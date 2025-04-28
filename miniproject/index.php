@@ -2,22 +2,15 @@
 
 declare(strict_types=1);
 
+session_start();
 require_once __DIR__ . "/utils/utils.php";
 const BASE_PATH = __DIR__ . "/";
 
-
 require_once getBasePath("Http/route.php");
-require_once getBasePath("Http/Router.php");
-require_once getBasePath("Http/RequestMethod.php");
+require_once getBasePath("Http/Session.php");
+$path = $_SERVER['REQUEST_URI'];
+$method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
 
+route()->resolve(path: $path, method: $method);
 
-//$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-$url = parse_url($_SERVER['REQUEST_URI'])['path'];
-
-//print_r($url);
-
-
-$path = route($url);
-$router = new Router();
-$router->route($path, RequestMethod::METHOD_GET);
+Session::unflash();
