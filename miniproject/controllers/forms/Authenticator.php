@@ -24,7 +24,7 @@ class Authenticator
                 ]);
                 return true;
             }
-        } catch (RuntimeException  $ex) {
+        } catch (RuntimeException $ex) {
             echo $ex->getMessage();
         }
         return false;

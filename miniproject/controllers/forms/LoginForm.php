@@ -2,29 +2,52 @@
 
 declare(strict_types=1);
 
+require_once "FormValidationException.php";
+require_once "Http/Validator.php";
+
 class LoginForm
 {
-    private static array $errors = [];
+    private array $errors = [];
 
-    public static function validate(string $email, string $password): bool
+    public function __construct(private readonly array $attributes)
     {
-        if (!Validator::validateEmail($email))
-            static::$errors['email'] = 'This field is required!!';
 
-        if (!Validator::validateString($password))
-            static::$errors['password'] = "This field is required!!";
+        if (!Validator::validateEmail($attributes['email']))
+            $this->errors['email'] = 'This field is required!!';
 
-        return empty(static::$errors);
+        if (!Validator::validateString($attributes['password']))
+            $this->errors['password'] = "This field is required!!";
     }
 
-    public static function errors(): array
+    public static function validate(array $attributes): static
     {
-        return static::$errors;
+        $instance = new static($attributes);
+
+        return $instance->failed() ? $instance->throw() : $instance;
     }
 
-    public static function error(string $key, string $message): void
+    public function failed(): bool
     {
-        static::$errors[$key] = $message;
+        return count($this->errors) > 0;
+    }
+
+    public function errors(): array
+    {
+        return $this->errors;
+    }
+
+    public function error(string $key, string $message): static
+    {
+        $this->errors[$key] = $message;
+        return $this;
+    }
+
+    /**
+     * @throws FormValidationException
+     */
+    function throw()
+    {
+        throw new FormValidationException($this->errors(), $this->attributes);
     }
 
 }

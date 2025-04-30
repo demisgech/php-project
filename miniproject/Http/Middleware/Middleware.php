@@ -12,7 +12,7 @@ class Middleware
         'auth' => Auth::class
     ];
 
-    public static function resolve(string $key)
+    public static function resolve(string $key): void
     {
         if (!array_key_exists($key, static::middlewares))
             return;

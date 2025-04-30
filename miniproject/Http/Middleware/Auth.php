@@ -9,7 +9,7 @@ class Auth
     public function handle(): void
     {
         if (!($_SESSION['user'] ?? false)) {
-//            http_response_code(401);
+            //            http_response_code(401);
             Redirect::to("/");
         }
     }

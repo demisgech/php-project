@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
+use JetBrains\PhpStorm\NoReturn;
+
 require_once "Middleware/Middleware.php";
 
 class Router
 {
     protected array $routes = [];
 
-    private function add(string $path, string $controller, string $method)
+    private function add(string $path, string $controller, string $method): static
     {
         $this->routes[] = [
             'path' => $path,
@@ -19,33 +21,33 @@ class Router
         return $this;
     }
 
-    public function get(string $path, string $controller)
+    public function get(string $path, string $controller): static
     {
         return $this->add($path, $controller, "GET");
     }
 
-    public function post(string $path, string $controller)
+    public function post(string $path, string $controller): static
     {
         return $this->add($path, $controller, "POST");
     }
 
-    public function put(string $path, string $controller)
+    public function put(string $path, string $controller): static
     {
         return $this->add($path, $controller, "PUT");
     }
 
-    public function patch(string $path, string $controller)
+    public function patch(string $path, string $controller): static
     {
         return $this->add($path, $controller, "PATCH");
 
     }
 
-    public function delete(string $path, string $controller)
+    public function delete(string $path, string $controller): static
     {
         return $this->add($path, $controller, method: "DELETE");
     }
 
-    public function only(string $key)
+    public function only(string $key): static
     {
         $this->routes[array_key_last($this->routes)]['middleware'] = $key;
         return $this;
@@ -63,6 +65,11 @@ class Router
             }
         }
         $this->abort();
+    }
+
+    public function previousUrl()
+    {
+        return $_SERVER['HTTP_REFERER'];
     }
 
     protected function abort(int $statusCode = 404)
